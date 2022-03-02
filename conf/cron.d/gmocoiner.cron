@@ -4,4 +4,4 @@ LOG_PATH=/home/kiwi/git/gmocoiner/log/cron.log
 # Need to set --user `id kiwi -u`
 ROOT_COMMAND='docker run --rm --name gmocoiner --user 1000 -v /home/kiwi/git/gmocoiner:/usr/local/sbin/gmocoiner -w=/usr/local/sbin/gmocoiner/bin pukeko python main.py'
 
-00 07 * * 1-5 kiwi $ROOT_COMMAND tsumitate >> $LOG_PATH 2>&1
+00 07 * * * kiwi $ROOT_COMMAND tsumitate >> $LOG_PATH 2>&1
