@@ -42,6 +42,7 @@ def tsumitate():
     msg = "-- order --"
     for symbol in TARGETS:
         msg += order(gmo, symbol)
+    slack_msg(msg)
         
     show_status(gmo)
     
