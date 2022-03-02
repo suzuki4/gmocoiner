@@ -43,7 +43,7 @@ def tsumitate():
     for symbol in TARGETS:
         msg += order(gmo, symbol)
         
-    show_status()
+    show_status(gmo)
     
 
 def order(gmo, symbol):
