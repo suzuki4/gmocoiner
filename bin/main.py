@@ -10,6 +10,7 @@ import sys
 sys.path.append("..")
 from gmocoiner import GMOCoin
 import json
+import random
 
 import os
 #os.chdir("/Users/user/git/huia/bin")
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 #class tmp: info=print; debug=print; warning=print; parent=parent
 #logger = tmp
 
-from common import log_info, handle_error, notify_slack, slack_msg
+from common import log_info, handle_error, notify_slack, slack_msg, slack_warning
 from parameter import Conf, Args
 conf = Conf().conf
 args = Args().args
@@ -55,12 +56,28 @@ def order(gmo, symbol):
     price = int((int(ticker['data'][0]['bid']) + int(ticker['data'][0]['ask'])) / 2)
     unit = conf.getfloat(symbol, "unit")
     digit = len(str(unit)) - 2
-    amount = conf.getfloat(symbol, "amount")
-    volume = round(amount / price, digit)
+    set_amount = conf.getfloat(symbol, "amount")
+    volume = round(set_amount / price, digit)
+    
+    # 確率で数量を調整する
+    amount = price * volume
+    if amount < set_amount:
+        p = (set_amount - amount) / (price * unit) 
+        if random.random() < p:
+            volume += unit
+            slack_warning(f"\n{symbol} volume added {unit}")
+            #(p * (volume + unit) + (1-p) * volume) * price
+
+    elif amount > set_amount:
+        p = (amount - set_amount) / (price * unit) 
+        if random.random() < p:
+            volume -= unit
+            slack_warning(f"\n{symbol} volume subtracted {unit}")
+            #(p * (volume - unit) + (1-p) * volume) * price
 
     resp = gmo.order(symbol=symbol, side='BUY',
                      executionType='LIMIT', size=volume, price=price)
-    msg = f"\n{symbol} price:{price} volume:{volume} amount:{price*volume} status:{resp}"
+    msg = f"\n{symbol} price:{price} volume:{volume} amount:{amount} status:{resp}"
     
     return msg
 
