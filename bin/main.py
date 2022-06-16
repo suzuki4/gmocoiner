@@ -57,7 +57,8 @@ def order(gmo, symbol):
     unit = conf.getfloat(symbol, "unit")
     digit = len(str(unit)) - 2
     set_amount = conf.getfloat(symbol, "amount")
-    volume = round(set_amount / price, digit)
+    minimum_volume = conf.getfloat(symbol, "minimum")
+    volume = max(round(set_amount / price, digit), minimum_volume)
     
     # 確率で数量を調整する
     amount = price * volume
