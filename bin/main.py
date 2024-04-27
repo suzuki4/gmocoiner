@@ -11,6 +11,7 @@ sys.path.append("..")
 from gmocoiner import GMOCoin
 import json
 import random
+import time
 
 import os
 #os.chdir("/Users/user/git/huia/bin")
@@ -42,7 +43,14 @@ def tsumitate():
     
     msg = "-- order --"
     for symbol in TARGETS:
-        msg += order(gmo, symbol)
+        unix_days = int(time.time() / 60 / 60 / 24)
+        interval_trade_days = conf.getint(symbol, "interval_trade_days")
+        if unix_days % interval_trade_days:
+            # 割り切れなかったら
+            msg += f"\n{symbol} is not in tradable date: {unix_days} / {interval_trade_days}"
+        else:
+            # 割り切れたら
+            msg += order(gmo, symbol)
     slack_msg(msg)
         
     show_status(gmo)
