@@ -62,8 +62,8 @@ def order(gmo, symbol):
     resp = gmo.ticker(symbol='DAI')
     ticker = resp.json()
     dai_price = float((float(ticker['data'][0]['bid']) + float(ticker['data'][0]['ask'])) / 2)
-    no_order_dai_price = conf.getfloat(symbol, "no_order_dai_price")
-    limit_price = no_order_dai_price * dai_price
+    no_order_dai_volume = conf.getfloat(symbol, "no_order_dai_volume")
+    limit_price = no_order_dai_volume * dai_price
     
     # ティッカー情報を取得
     resp = gmo.ticker(symbol=symbol)
@@ -71,7 +71,7 @@ def order(gmo, symbol):
     
     price = int((int(ticker['data'][0]['bid']) + int(ticker['data'][0]['ask'])) / 2)
     if price >= limit_price:
-        return f"\n{symbol} is over limit price: {limit_price:,.0f}yen({no_order_dai_price:,.0f}DAI)"
+        return f"\n{symbol} is over limit price: {limit_price:,.0f}yen({no_order_dai_volume:,.0f}DAI)"
     unit = conf.getfloat(symbol, "unit")
     digit = len(str(unit)) - 2
     set_amount = conf.getfloat(symbol, "amount")
