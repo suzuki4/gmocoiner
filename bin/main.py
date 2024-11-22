@@ -94,6 +94,8 @@ def order(gmo, symbol):
             slack_warning(f"\n{symbol} volume subtracted {unit}")
             #(p * (volume - unit) + (1-p) * volume) * price
 
+    volume = round(volume, digit)
+
     resp = gmo.order(symbol=symbol, side='BUY',
                      executionType='LIMIT', size=volume, price=price)
     return f"\n{symbol} price:{price} volume:{volume} amount:{amount} status:{resp}"
