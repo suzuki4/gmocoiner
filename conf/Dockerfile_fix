@@ -1,0 +1,6 @@
+FROM pukeko:latest
+
+RUN pip install slack_sdk==3.35.0
+RUN pip install requests==2.32.3
+
+# docker build -t pukeko:latest -f Dockerfile_fix .

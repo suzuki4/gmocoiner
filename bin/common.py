@@ -7,7 +7,7 @@ Created on Wed May  6 16:04:17 2020
 """
 
 import sys
-from slacker import Slacker
+from slack_sdk import WebClient
 import traceback
 
 import logging
@@ -16,40 +16,40 @@ logger = logging.getLogger(__name__)
 from parameter import Conf, Args
 conf = Conf().conf
 args = Args().args
-slack = Slacker(conf.get("slack", "token"))
+slack_client = WebClient(conf.get("slack", "token"))
 
 
-def notify_slack(start=True, channel=None, as_user=True):
+def notify_slack(start=True, channel=None):
     
     def _notify_slack(func):         
         def wrapper(*arg, **kwargs):
             if start:
-                slack_msg(f'Start {args}.', channel=channel, as_user=as_user)
+                slack_msg(f'Start {args}.', channel=channel)
             ret = func(*arg, **kwargs)
-            slack_msg(f'End {args}.', channel=channel, as_user=as_user)
+            slack_msg(f'End {args}.', channel=channel)
             return ret
         return wrapper
     return _notify_slack
     
 
-def slack_msg(msg, channel=None, as_user=True):
+def slack_msg(msg, channel=None):
     
     if channel is None:
         channel = conf.get("slack", "channel")
         
-    slack.chat.post_message(channel, msg, as_user=as_user)
+    slack_client.chat_postMessage(channel=channel, text=msg)
 
 
-def slack_error(msg, channel=None, as_user=True):
+def slack_error(msg, channel=None):
     
     msg = f"<!channel> ERROR: {msg}"
-    slack_msg(msg, channel, as_user)
+    slack_msg(msg, channel)
 
 
-def slack_warning(msg, channel=None, as_user=True):
+def slack_warning(msg, channel=None):
     
     msg = f"WARNING: {msg}"
-    slack_msg(msg, channel, as_user)
+    slack_msg(msg, channel)
     	
 
 def log_info(func):    
